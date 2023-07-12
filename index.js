@@ -19,10 +19,8 @@ app.get("/", (req, res) => {
   res.send("Hello");
 });
 
-app.use( route);
-
-app;
+app.use(route);
 
 app.listen(port, () => {
-  console.log(`server running on ${port}`);
+  console.log(`server running on ${port} `);
 });

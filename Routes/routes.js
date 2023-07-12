@@ -8,9 +8,11 @@ const {
   auth,
 } = require("../controllers/APi");
 
+const isLoggedIn = require("../middleware/IsLoggedIn");
+
 route.use("/data", Data);
 
-//route.use("/bollywood", auth, bollywood);
+route.use("/bollywood", auth, bollywood);
 //route("/fitness", fitness);
 //route.use("/hollywood", hollywood);
 //route("/technology", technology);
@@ -19,5 +21,7 @@ route.use("/data", Data);
 route.post("/register", Register);
 
 route.post("/login", Login);
+
+route.get ("/checkloggedin", isLoggedIn);
 
 module.exports = { route };

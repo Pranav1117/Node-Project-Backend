@@ -1,19 +1,19 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+
 dotenv.config();
 const secretkey = process.env.secretkey;
-/*const Auth = (req, res, next) => {
-  const token = req.headers.authorization;
+
+const Auth = async (req, res, next) => {
+  const token = req.headers;
+  console.log(token, "in token");
 
   if (token) {
-    // Verify the token
     jwt.verify(token, secretkey, (err, decoded) => {
       if (err) {
-        // Token is invalid or expired
         return res.status(401).json({ error: "Invalid token" });
       } else {
-        // Token is valid
-        req.user = decoded; // Attach the decoded user information to the request object
+        req.user = decoded;
         next();
       }
     });
@@ -23,6 +23,4 @@ const secretkey = process.env.secretkey;
   }
 };
 
-module.exports = Auth;*/
-
-
+module.exports = Auth;

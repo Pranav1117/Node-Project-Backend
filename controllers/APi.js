@@ -8,21 +8,9 @@ dotenv.config();
 const secretkey = process.env.secretkey;
 
 const auth = (req, res, next) => {
-  //const { authorization } = req.headers;
   console.log(req.headers);
-  //const token = authorization.split(" ")[1];
-  //console.log(token, "authorization token");
-  /*if (token) {
-    const { email } = jwt.verify(token, secretkey);
-    console.log(email);
 
-    for (let i = 0; i < storedData.length; i++) {
-      const user = storedData[i];
-      next();
-    }
-  } else {
-    console.log("no token");
-  }*/
+  next();
 };
 
 const Data = (req, res) => {
@@ -397,8 +385,8 @@ const Data = (req, res) => {
 };
 
 const bollywood = (req, res) => {
-  res.send[
-    ({
+  res.send([
+    {
       category: "Bollywood",
       id: 5,
       name: "Bhool Bhulaiya",
@@ -477,8 +465,8 @@ const bollywood = (req, res) => {
       genre1: "horror",
       genre2: "action",
       genre3: "sci-fi",
-    })
-  ];
+    },
+  ]);
 };
 
 const hollywood = (req, res) => {
@@ -568,18 +556,13 @@ const hollywood = (req, res) => {
 
 const Register = (req, res) => {
   const { name, email, password } = req.body;
-  //console.log(email);
-  /*for (let i = 0; i < storedData.length; i++) {
-    const user = storedData[i];
-    console.log(storedData);*/
 
   const user = storedData.find((item) => {
     if (item.email === email) return item;
   });
 
   if (user) {
-    //console.log(email, user.email);
-    return res.send("User already exists");
+    return res.send({ msg: "User already exists" });
   } else {
     const salt = bcrypt.genSaltSync(10);
     const hashPass = bcrypt.hashSync(password, salt);
@@ -598,18 +581,21 @@ const Register = (req, res) => {
 
     const options = {
       expires: new Date(Date.now() + 5 * 24 * 60 * 60),
+
+      httpOnly: true,
     };
     // console.log("in success register");
-    console.log(storedData, "stored data in register");
+    console.log(token, "stored token in register");
     console.log("+==========================================");
     return res
       .cookie("token", token, options)
-      .send("user successfully registered");
+      .send({ msg: "User successfully registered", token: token });
   }
 };
 
 const Login = (req, res) => {
   const { email, password } = req.body;
+  console.log(req.cookies, "cookie");
   console.log("-------------------------------------");
 
   for (let i = 0; i < storedData.length; i++) {
@@ -625,7 +611,12 @@ const Login = (req, res) => {
           expiresIn: "3d",
         });
         user.token = token;
-        return res.send("Login succesfull");
+        const options = {
+          expires: new Date(Date.now() + 5 * 24 * 60 * 60),
+
+          httpOnly: true,
+        };
+        return res.cookie("token", token, options).send("Login succesfull");
       } else {
         return res.send("Please enter correct password");
       }
