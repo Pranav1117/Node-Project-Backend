@@ -643,7 +643,7 @@ const Login = (req, res) => {
   if (isMatch) {
     const token = jwt.sign({ email: email }, secretkey, { expiresIn: "3D" });
 
-    return res.send("user login successfully");
+    return res.send("Login succesfull");
   } else {
     res.send("plz enter correct password");
   }
