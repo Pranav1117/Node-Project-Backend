@@ -598,7 +598,7 @@ const Login = (req, res) => {
   console.log(req.cookies, "cookie");
   console.log("-------------------------------------");
 
-  for (let i = 0; i < storedData.length; i++) {
+  /* for (let i = 0; i < storedData.length; i++) {
     const user = storedData[i];
     console.log(user, "in login");
     console.log("======================================");
@@ -606,10 +606,12 @@ const Login = (req, res) => {
     if (user.email === email) {
       const ismatch = bcrypt.compareSync(password, user.password);
       console.log(ismatch);
+
       if (ismatch) {
         const token = jwt.sign({ email: email }, secretkey, {
           expiresIn: "3d",
         });
+
         user.token = token;
         const options = {
           expires: new Date(Date.now() + 5 * 24 * 60 * 60),
@@ -624,26 +626,27 @@ const Login = (req, res) => {
       return res.send("User is not registered");
     }
   }
-  /*storedData.find((item) => {
-    console.log(item, email);
+  */
+
+  const user = storedData.find((item) => {
     if (item.email === email) {
-      const isMatch = bcrypt.compareSync(password, item.hashPass);
-      console.log(isMatch);
-
-      if (isMatch) {
-        const token = jwt.sign({ email: email }, secretkey, {
-          expiresIn: "3d",
-        });
-        item.token = token;
-
-        return res.send("Login Succeful");
-      } else {
-        return res.send("plz enter correct password");
-      }
-    } else {
-      return res.send("User is not registered");
+      return item;
     }
-  });*/
+  });
+
+  if (!user) {
+    return res.send({ msg: "user not registered" });
+  }
+
+  const isMatch = bcrypt.compareSync(password, user.password);
+
+  if (isMatch) {
+    const token = jwt.sign({ email: email }, secretkey, { expiresIn: "3D" });
+
+    return res.send({ msg: "user login successfully" });
+  } else {
+    res.send({ msg: "plz enter correct password" });
+  }
 };
 
 module.exports = { Data, Register, Login, bollywood, auth, hollywood };
