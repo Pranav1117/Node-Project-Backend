@@ -635,7 +635,7 @@ const Login = (req, res) => {
   });
 
   if (!user) {
-    return res.send({ msg: "user not registered" });
+    return res.send("user not registered");
   }
 
   const isMatch = bcrypt.compareSync(password, user.password);
@@ -643,9 +643,9 @@ const Login = (req, res) => {
   if (isMatch) {
     const token = jwt.sign({ email: email }, secretkey, { expiresIn: "3D" });
 
-    return res.send({ msg: "user login successfully" });
+    return res.send("user login successfully");
   } else {
-    res.send({ msg: "plz enter correct password" });
+    res.send("plz enter correct password");
   }
 };
 
