@@ -14,6 +14,7 @@ const auth = (req, res, next) => {
 };
 
 const Data = (req, res) => {
+  
   res.send([
     {
       category: "Bollywood",
@@ -563,7 +564,7 @@ const Register = (req, res) => {
   });
 
   if (user) {
-    return res.send({ msg: "User already exists" });
+    return res.send({ msg: "User already exists", isLoggedIN: false });
   } else {
     const salt = bcrypt.genSaltSync(10);
     const hashPass = bcrypt.hashSync(password, salt);
@@ -574,7 +575,6 @@ const Register = (req, res) => {
       name: name,
       email: email,
       password: hashPass,
-      token: token,
     };
     console.log(tempObj, "in register");
     console.log("=====================================");
@@ -588,9 +588,11 @@ const Register = (req, res) => {
     // console.log("in success register");
     console.log(token, "stored token in register");
     console.log("+==========================================");
-    return res
-      .cookie("token", token, options)
-      .send({ msg: "User successfully registered", token: token });
+    return res.send({
+      msg: "User successfully registered",
+      token: token,
+      isLoggedIN: false,
+    });
   }
 };
 
@@ -599,36 +601,6 @@ const Login = (req, res) => {
   console.log(req.cookies, "cookie");
   console.log("-------------------------------------");
 
-  /* for (let i = 0; i < storedData.length; i++) {
-    const user = storedData[i];
-    console.log(user, "in login");
-    console.log("======================================");
-
-    if (user.email === email) {
-      const ismatch = bcrypt.compareSync(password, user.password);
-      console.log(ismatch);
-
-      if (ismatch) {
-        const token = jwt.sign({ email: email }, secretkey, {
-          expiresIn: "3d",
-        });
-
-        user.token = token;
-        const options = {
-          expires: new Date(Date.now() + 5 * 24 * 60 * 60),
-
-          httpOnly: true,
-        };
-        return res.cookie("token", token, options).send("Login succesfull");
-      } else {
-        return res.send("Please enter correct password");
-      }
-    } else {
-      return res.send("User is not registered");
-    }
-  }
-  */
-
   const user = storedData.find((item) => {
     if (item.email === email) {
       return item;
@@ -636,7 +608,7 @@ const Login = (req, res) => {
   });
 
   if (!user) {
-    return res.send("user not registered");
+    return res.send({ msg: "user not registered", isLoggedIN: false });
   }
 
   const isMatch = bcrypt.compareSync(password, user.password);
@@ -644,9 +616,13 @@ const Login = (req, res) => {
   if (isMatch) {
     const token = jwt.sign({ email: email }, secretkey, { expiresIn: "3D" });
 
-    return res.send("Login succesfull");
+    return res.send({
+      msg: "Login succesfull",
+      token: token,
+      isLoggedIN: true,
+    });
   } else {
-    res.send("plz enter correct password");
+    res.send({ msg: "plz enter correct password", isLoggedIN: false });
   }
 };
 

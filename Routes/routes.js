@@ -8,7 +8,7 @@ const {
   auth,
 } = require("../controllers/APi");
 
-const isLoggedIn = require("../middleware/IsLoggedIn");
+const { isLoggedIn } = require("../middleware/IsLoggedIn");
 
 route.use("/data", Data);
 
@@ -22,6 +22,6 @@ route.post("/register", Register);
 
 route.post("/login", Login);
 
-route.get ("/checkloggedin", isLoggedIn);
+route.get("/checkloggedin", isLoggedIn);
 
 module.exports = { route };

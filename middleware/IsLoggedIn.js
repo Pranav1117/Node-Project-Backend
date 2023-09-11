@@ -1,22 +1,48 @@
+const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 
 dotenv.config();
-const secretkey = process.env.secretkey;
 
-const isLoggedIn = (req) => {
-  console.log(req.body, "in checkkingnng");
+const SECRET_KEY = process.env.SecretKey;
+
+// const UserModel = require("../model/Users");
+
+const isLoggedIn = async (req, res, next) => {
+  const currentTime = Math.floor(Date.now() / 1000);
+
+  const { authorization } = req.headers;
+
+  const token = authorization.split(" ")[1];
+
+  if (!token) {
+    req.isLoggedIn = false;
+    req.user = null;
+    // console.log("In null tokenn ----------------------");
+    return next();
+  }
+
   try {
-    const decoded = jwt.verify(req.body, secretkey);
+    const { exp, email } = jwt.verify(token, SECRET_KEY);
 
-    const currentTime = Math.floor(Date.now() / 1000);
-    if (decoded.exp < currentTime) {
-      return res.send;
+    if (exp > currentTime) {
+      const User = await UserModel.findOne({ email: email });
+      // console.log(User.name);
+      req.isLoggedIn = true;
+      req.user = User.name;
+
+      // console.log("in 'If token in present'");
+      return next();
     } else {
-      return false;
+      req.isLoggedIn = false;
+      req.user = null;
+
+      return next();
     }
   } catch (err) {
-    return false;
+    console.log(err);
+    req.isLoggedIn = false;
+    req.user = null;
+    next();
   }
 };
-
-module.exports = isLoggedIn;
+module.exports = { isLoggedIn };
