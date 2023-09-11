@@ -7,7 +7,7 @@ const SECRET_KEY = process.env.SecretKey;
 
 // const UserModel = require("../model/Users");
 
-const isLoggedIn = async (req, res, next) => {
+const isLoggedIn = async (req, res) => {
   const currentTime = Math.floor(Date.now() / 1000);
 
   const { authorization } = req.headers;
@@ -18,7 +18,7 @@ const isLoggedIn = async (req, res, next) => {
     req.isLoggedIn = false;
     req.user = null;
     // console.log("In null tokenn ----------------------");
-    return next();
+    return res.send({ isLoggedIn: false });
   }
 
   try {
@@ -31,18 +31,18 @@ const isLoggedIn = async (req, res, next) => {
       req.user = User.name;
 
       // console.log("in 'If token in present'");
-      return next();
+      return res.send({ isLoggedIn: true });
     } else {
       req.isLoggedIn = false;
       req.user = null;
 
-      return next();
+      return res.send({ isLoggedIn: false });
     }
   } catch (err) {
     console.log(err);
     req.isLoggedIn = false;
     req.user = null;
-    next();
+    return res.send({ isLoggedIn: false, msg: "something went wrong" });
   }
 };
 module.exports = { isLoggedIn };
