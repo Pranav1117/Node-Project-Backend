@@ -25,7 +25,7 @@ const isLoggedIn = async (req, res) => {
     const { exp, email } = jwt.verify(token, SECRET_KEY);
 
     if (exp > currentTime) {
-      const User = await UserModel.findOne({ email: email });
+      // const User = await UserModel.findOne({ email: email });
       // console.log(User.name);
       req.isLoggedIn = true;
       req.user = User.name;

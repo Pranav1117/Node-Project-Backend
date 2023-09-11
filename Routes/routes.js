@@ -6,9 +6,8 @@ const {
   bollywood,
   hollywood,
   auth,
+  isLoggedIn,
 } = require("../controllers/APi");
-
-const { isLoggedIn } = require("../middleware/IsLoggedIn");
 
 route.use("/data", Data);
 
