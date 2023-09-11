@@ -663,6 +663,26 @@ const isLoggedIn = (req, res) => {
     return res.send({ isLoggedIn: false, msg: "something went wrong" });
   }
 };
+
+const logOut = (req, res) => {
+  try {
+    const { authorization } = req.headers;
+
+    const token = authorization.split(" ")[1];
+    console.log(token);
+
+    return res.send({
+      msg: "Logged Out Succesfully",
+      token: null,
+      isLoggedIn: false,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.send({
+      msg: "Something went Wrong",
+    });
+  }
+};
 module.exports = {
   Data,
   Register,
@@ -670,5 +690,5 @@ module.exports = {
   bollywood,
   auth,
   hollywood,
-  isLoggedIn,
+  isLoggedIn,logOut
 };

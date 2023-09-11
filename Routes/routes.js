@@ -7,6 +7,7 @@ const {
   hollywood,
   auth,
   isLoggedIn,
+  logOut,
 } = require("../controllers/APi");
 
 route.use("/data", Data);
@@ -22,5 +23,8 @@ route.post("/register", Register);
 route.post("/login", Login);
 
 route.get("/checkloggedin", isLoggedIn);
+
+
+route.post("/logout", logOut);
 
 module.exports = { route };
