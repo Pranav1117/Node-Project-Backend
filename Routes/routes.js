@@ -24,7 +24,6 @@ route.post("/login", Login);
 
 route.get("/checkloggedin", isLoggedIn);
 
-
-route.post("/logout", logOut);
+route.get("/logout", logOut);
 
 module.exports = { route };

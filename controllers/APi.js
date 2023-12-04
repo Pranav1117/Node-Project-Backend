@@ -597,10 +597,13 @@ const Register = (req, res) => {
 
 const Login = (req, res) => {
   const { email, password } = req.body;
-  console.log(req.cookies, "cookie");
+  console.log(req.body);
+  storedData.push(req.body);
+  console.log(email, "cookie");
   console.log("-------------------------------------");
 
   const user = storedData.find((item) => {
+    console.log(item, "userarr");
     if (item.email === email) {
       return item;
     }
@@ -631,7 +634,7 @@ const isLoggedIn = (req, res) => {
   const { authorization } = req.headers;
 
   const token = authorization.split(" ")[1];
-
+  res.send("hellow from checked logged in");
   if (!token) {
     req.isLoggedIn = false;
     req.user = null;
@@ -665,6 +668,7 @@ const isLoggedIn = (req, res) => {
 };
 
 const logOut = (req, res) => {
+  res.send("logoutt");
   try {
     const { authorization } = req.headers;
 
@@ -690,5 +694,6 @@ module.exports = {
   bollywood,
   auth,
   hollywood,
-  isLoggedIn,logOut
+  isLoggedIn,
+  logOut,
 };
