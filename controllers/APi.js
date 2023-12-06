@@ -1,5 +1,6 @@
 let storedData = [];
 
+const Users = require("../model/Users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookie = require("cookie-parser");
@@ -555,12 +556,12 @@ const hollywood = (req, res) => {
   ];
 };
 
-const Register = (req, res) => {
+const Register = async (req, res) => {
   const { name, email, password } = req.body;
 
-  const user = storedData.find((item) => {
-    if (item.email === email) return item;
-  });
+  const user = await Users.findOne({ email });
+
+  console.log(user, "----------------------USer");
 
   if (user) {
     return res.send({ msg: "User already exists", isLoggedIN: false });
@@ -575,17 +576,15 @@ const Register = (req, res) => {
       email: email,
       password: hashPass,
     };
-    console.log(tempObj, "in register");
+
+    // console.log(tempObj, "in register");
+
     console.log("=====================================");
     storedData.push(tempObj);
+    const newUser = await Users.create(tempObj);
+    console.log(newUser, "new user");
 
-    const options = {
-      expires: new Date(Date.now() + 5 * 24 * 60 * 60),
-
-      httpOnly: true,
-    };
-    // console.log("in success register");
-    console.log(token, "stored token in register");
+    // console.log(token, "stored token in register");
     console.log("+==========================================");
     return res.send({
       msg: "User successfully registered",
@@ -595,25 +594,25 @@ const Register = (req, res) => {
   }
 };
 
-const Login = (req, res) => {
+const Login = async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
+
+  // console.log(req.body);
   storedData.push(req.body);
-  console.log(email, "cookie");
+
+  // console.log(email, "cookie");
+
   console.log("-------------------------------------");
 
-  const user = storedData.find((item) => {
-    console.log(item, "userarr");
-    if (item.email === email) {
-      return item;
-    }
-  });
+  const user = await Users.find({ email });
 
-  if (!user) {
+  console.log(user, "----------------user");
+
+  if (user.length < 1) {
     return res.send({ msg: "user not registered", isLoggedIN: false });
   }
 
-  const isMatch = bcrypt.compareSync(password, user.password);
+  const isMatch = bcrypt.compareSync(password, user[0].password);
 
   if (isMatch) {
     const token = jwt.sign({ email: email }, secretkey, { expiresIn: "3D" });
@@ -624,47 +623,54 @@ const Login = (req, res) => {
       isLoggedIN: true,
     });
   } else {
-    res.send({ msg: "plz enter correct password", isLoggedIN: false });
+    return res.send({ msg: "plz enter correct password", isLoggedIN: false });
   }
 };
 
-const isLoggedIn = (req, res) => {
+const isLoggedIn = async (req, res) => {
   const currentTime = Math.floor(Date.now() / 1000);
+
+  let token;
 
   const { authorization } = req.headers;
 
-  const token = authorization.split(" ")[1];
-  res.send("hellow from checked logged in");
+  if (authorization) {
+    token = authorization.split(" ")[1];
+  } else {
+    return res.send("no token provided");
+  }
+
+  console.log(token, "-----------autho");
+
   if (!token) {
+    console.log("No Authorization header");
     req.isLoggedIn = false;
     req.user = null;
-    // console.log("In null tokenn ----------------------");
-    return res.send({ isLoggedIn: false });
+
+    return res.send({
+      isLoggedIn: false,
+      msg: "Unauthorized: No token provided",
+    });
   }
 
   try {
-    const { exp, email } = jwt.verify(token, secretkey);
+    const { exp, email } = await jwt.verify(token, secretkey);
 
     if (exp > currentTime) {
-      // const User = storedData.find({ email: email });
-      // console.log(User.name);
-      // req.isLoggedIn = true;
-      // req.user = User.name;
-
-      // console.log("in 'If token in present'");
       return res.send({ isLoggedIn: true });
     } else {
-      // req.isLoggedIn = false;
-      // req.user = null;
-
       return res.send({ isLoggedIn: false });
     }
   } catch (err) {
-    console.log(err);
+    console.log(err, "err in catch black last");
     // req.isLoggedIn = false;
     // req.user = null;
     return res.send({ isLoggedIn: false, msg: "something went wrong" });
   }
+
+  // if (!token) {
+  //   return res.send({ isLoggedIn: false });
+  // }
 };
 
 const logOut = (req, res) => {

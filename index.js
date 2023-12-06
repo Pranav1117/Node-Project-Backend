@@ -1,4 +1,5 @@
 const express = require("express");
+const { connection } = require("./config/mongodb");
 const { route } = require("./Routes/routes");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -21,6 +22,11 @@ app.get("/", (req, res) => {
 
 app.use(route);
 
-app.listen(port, () => {
-  console.log(`server running on ${port} `);
+app.listen(port, async () => {
+  try {
+    await connection();
+    console.log(`server running on ${port} `);
+  } catch (err) {
+    console.log(err);
+  }
 });
