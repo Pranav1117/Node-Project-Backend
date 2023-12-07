@@ -15,7 +15,7 @@ const auth = (req, res, next) => {
 };
 
 const Data = (req, res) => {
-  res.send([
+  return res.send([
     {
       category: "Bollywood",
       id: 5,
@@ -577,8 +577,6 @@ const Register = async (req, res) => {
       password: hashPass,
     };
 
-    // console.log(tempObj, "in register");
-
     console.log("=====================================");
     storedData.push(tempObj);
     const newUser = await Users.create(tempObj);
@@ -654,7 +652,7 @@ const isLoggedIn = async (req, res) => {
   }
 
   try {
-    const { exp, email } = await jwt.verify(token, secretkey);
+    const { exp, email } = jwt.verify(token, secretkey);
 
     if (exp > currentTime) {
       return res.send({ isLoggedIn: true });
@@ -667,10 +665,6 @@ const isLoggedIn = async (req, res) => {
     // req.user = null;
     return res.send({ isLoggedIn: false, msg: "something went wrong" });
   }
-
-  // if (!token) {
-  //   return res.send({ isLoggedIn: false });
-  // }
 };
 
 const logOut = (req, res) => {
