@@ -25,6 +25,10 @@
   "bugs": {
     "url": "https://github.com/Pranav1117/Node-Project-Backend/issues"
   },
+
+  "engines": {
+    "node": "19.3.0"
+  },
   "homepage": "https://github.com/Pranav1117/Node-Project-Backend#readme",
   "description": ""
 }
